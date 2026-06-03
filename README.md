@@ -2,8 +2,9 @@
 
 **Problema escolhido:** P1 — Multiplicação de matrizes grandes  
 **Disciplina:** Laboratório de Programação II — LPII-261-T001
-**Aluno:**: João Victor Oliveira
-**Matrícula**: 20240008468
+
+#### Aluno: João Victor Oliveira
+#### Matrícula: 20240008468
 ---
 
 ## Estrutura do repositório
