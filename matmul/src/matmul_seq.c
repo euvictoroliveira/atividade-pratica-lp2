@@ -2,14 +2,14 @@
 #include <stdlib.h>
 #include <time.h>
 
-/* Preenche a matriz com valores pseudoaleatórios determinísticos */
+// Preenche a matriz com valores pseudoaleatórios determinísticos
 static void preencher(double *M, int n, unsigned int seed) {
     srand(seed);
     for (int i = 0; i < n * n; i++)
         M[i] = (double)(rand() % 100) / 10.0;
 }
 
-/* Implementação sequencial fornecida no enunciado */
+// Implementação sequencial fornecida no enunciado 
 void multiplicar(const double *A, const double *B, double *C, int n) {
     for (int i = 0; i < n; i++)
         for (int j = 0; j < n; j++) {
@@ -29,30 +29,30 @@ int main(int argc, char *argv[]) {
     double *C = malloc(n * n * sizeof(double));
     if (!A || !B || !C) { perror("malloc"); return 1; }
 
-    /* Setup fora do cronômetro */
+    // Setup fora do cronômetro 
     preencher(A, n, 42);
     preencher(B, n, 99);
 
-    /* ---- início do cronômetro ---- */
+    // Inicia cronomômetro
     struct timespec t0, t1;
     clock_gettime(CLOCK_MONOTONIC, &t0);
 
     multiplicar(A, B, C, n);
 
     clock_gettime(CLOCK_MONOTONIC, &t1);
-    /* ---- fim do cronômetro ---- */
+    // Finaliza cronômetro e calcula tempo decorrido 
 
     double elapsed = (t1.tv_sec - t0.tv_sec) +
                      (t1.tv_nsec - t0.tv_nsec) * 1e-9;
 
-    /* Checksum para validação cruzada */
+    // Checksum para validação cruzada
     double checksum = 0.0;
     for (int i = 0; i < n * n; i++) checksum += C[i];
 
     printf("Tempo    : %.4f s\n", elapsed);
     printf("Checksum : %.6e\n", checksum);
 
-    /* Saída CSV para o script de benchmark */
+    // Saída CSV para o script de benchmark
     FILE *f = fopen("results/seq.csv", "a");
     if (f) { fprintf(f, "%d,seq,1,%.6f,%.6e\n", n, elapsed, checksum); fclose(f); }
 

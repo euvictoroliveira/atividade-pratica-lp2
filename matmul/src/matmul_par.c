@@ -15,21 +15,17 @@
 #include <pthread.h>
 #include <time.h>
 
-/* ------------------------------------------------------------------ */
-/* Estrutura passada para cada thread                                   */
-/* ------------------------------------------------------------------ */
+// Define de estrutura com os argumentos de cada thread
 typedef struct {
     const double *A;
     const double *B;
     double       *C;
     int           n;
-    int           linha_ini;   /* primeira linha (inclusiva) */
-    int           linha_fim;   /* última linha (exclusiva)   */
+    int           linha_ini;   // primeira linha (inclusiva) 
+    int           linha_fim;   // última linha (exclusiva)  
 } ThreadArgs;
 
-/* ------------------------------------------------------------------ */
-/* Rotina de cada thread                                                */
-/* ------------------------------------------------------------------ */
+// Define rotinas para cada thread calcular seu bloco de linhas de c
 static void *calcular_bloco(void *arg) {
     ThreadArgs *ta = (ThreadArgs *)arg;
     const double *A = ta->A;
@@ -48,24 +44,20 @@ static void *calcular_bloco(void *arg) {
     return NULL;
 }
 
-/* ------------------------------------------------------------------ */
-/* Preenche a matriz com valores pseudoaleatórios determinísticos       */
-/* (mesma semente do sequencial → mesmo A e B → mesmo C esperado)      */
-/* ------------------------------------------------------------------ */
+/* Preenche a matriz com valores pseudoaleatórios determinísticos       
+  (mesma semente do sequencial → mesmo A e B → mesmo C esperado)      */
 static void preencher(double *M, int n, unsigned int seed) {
     srand(seed);
     for (int i = 0; i < n * n; i++)
         M[i] = (double)(rand() % 100) / 10.0;
 }
 
-/* ------------------------------------------------------------------ */
-/* main                                                                 */
-/* ------------------------------------------------------------------ */
+// função main
 int main(int argc, char *argv[]) {
     int n = (argc > 1) ? atoi(argv[1]) : 1000;
     int T = (argc > 2) ? atoi(argv[2]) : 4;
     if (T < 1) T = 1;
-    if (T > n) T = n;   /* não faz sentido ter mais threads do que linhas */
+    if (T > n) T = n;  // garante que não haja mais threads do que linhas
 
     printf("Paralelo  — n = %d, threads = %d\n", n, T);
 
@@ -98,7 +90,7 @@ int main(int argc, char *argv[]) {
         linha_atual += fatia;
     }
 
-    /* ---- início do cronômetro ---- */
+    // Inicia cronomômetro
     struct timespec t0, t1;
     clock_gettime(CLOCK_MONOTONIC, &t0);
 
@@ -109,19 +101,19 @@ int main(int argc, char *argv[]) {
         pthread_join(threads[t], NULL);
 
     clock_gettime(CLOCK_MONOTONIC, &t1);
-    /* ---- fim do cronômetro ---- */
+    // Finaliza cronômetro e calcula tempo decorrido 
 
     double elapsed = (t1.tv_sec - t0.tv_sec) +
                      (t1.tv_nsec - t0.tv_nsec) * 1e-9;
 
-    /* Checksum para validação cruzada */
+    // Checksum para validação cruzada
     double checksum = 0.0;
     for (int i = 0; i < n * n; i++) checksum += C[i];
 
     printf("Tempo    : %.4f s\n", elapsed);
     printf("Checksum : %.6e\n", checksum);
 
-    /* Saída CSV para o script de benchmark */
+    // Saída CSV para o script de benchmark
     FILE *f = fopen("results/par.csv", "a");
     if (f) { fprintf(f, "%d,par,%d,%.6f,%.6e\n", n, T, elapsed, checksum); fclose(f); }
 
