@@ -162,6 +162,38 @@ causa muitos *cache misses*. Uma otimização clássica é transpor `B` antes da
 multiplicação, tornando todos os acessos sequenciais — mas isso está fora do
 escopo deste trabalho (seria uma otimização de algoritmo, não de paralelismo).
 
+## Resultados Preliminares
+
+Foram realizados testes para validar a corretude da implementação paralela e comparar seu desempenho com a versão sequencial.
+
+### Validação de Corretude
+
+Para uma matriz de ordem 500, os checksums produzidos pelas versões sequencial e paralela foram idênticos, indicando que ambas geram o mesmo resultado.
+
+| Implementação        | Checksum     |
+| -------------------- | ------------ |
+| Sequencial           | 3.061753e+09 |
+| Paralela (4 threads) | 3.061753e+09 |
+
+Como os valores coincidem, considera-se que a implementação paralela preserva a corretude da multiplicação de matrizes.
+
+### Comparação de Desempenho
+
+Utilizando uma matriz de ordem 500, foram obtidos os seguintes tempos:
+
+| Implementação        | Tempo (s) |
+| -------------------- | --------- |
+| Sequencial           | 0.0830    |
+| Paralela (4 threads) | 0.0337    |
+
+O speedup obtido foi de aproximadamente 2,46x, calculado pela razão entre o tempo sequencial e o tempo paralelo.
+
+Isso significa que a versão paralela executou cerca de 2,5 vezes mais rápido que a versão sequencial para essa configuração de teste.
+
+### Observações
+
+Os testes acima tiveram como objetivo validar o funcionamento da implementação. Para o estudo de escalabilidade serão executados experimentos adicionais com matrizes maiores e diferentes quantidades de threads (1, 2, 4 e 8), permitindo calcular speedup, eficiência e analisar o comportamento da paralelização.
+
 ---
 
 ## Conclusão
